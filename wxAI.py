@@ -25,10 +25,11 @@ other details on using wxAI.
 '''
 
 opts = [] # loading options from the options.ini file into a list
-opts = iniproc.read("options.ini",'openai',
-                                   'model',
-                                   'fontsz1',
-                                   'fontsz2')
+opts = iniproc.read("options.ini",'openai',     # 0
+                                   'model',     # 1
+                                   'fontsz1',   # 2
+                                   'fontsz2',   # 3
+                                   'role')      # 4
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, title="wxAI V1.0 OpenAI " + opts[1]):
@@ -155,7 +156,7 @@ class MyFrame(wx.Frame):
         # SET CUSTOM FONTS
         # https://docs.wxpython.org/wx.FontInfo.html#wx-fontinfo
         # https://docs.wxpython.org/wx.FontFamily.enumeration.html#wx-fontfamily
-        custom_font1 = wx.Font( wx.FontInfo(int(opts[2])).Family(wx.FONTFAMILY_MODERN) )  # monospace
+        custom_font1 = wx.Font( wx.FontInfo(int(opts[2])).Family(wx.FONTFAMILY_TELETYPE) )  # monospace
         self.text1.SetFont(custom_font1)
         custom_font2 = wx.Font( wx.FontInfo(int(opts[3])).Family(wx.FONTFAMILY_MODERN) )
         self.text2.SetFont(custom_font2)
@@ -207,37 +208,44 @@ class MyFrame(wx.Frame):
 
 
     def on_submit(self, event):
-        ''' Event handler for Submit button. '''
+        ''' Event handler for Submit button (Ctrl-G). '''
         self.text2.SetValue("Processing ...")
         wx.Yield()
         query = self.text1.GetValue()
         aitext = self.gptCode(opts[0], opts[1], query)
+        if aitext == "":
+            self.text2.SetValue("")
+            self.text1.SetValue("")
+            return
         self.text2.SetValue(aitext)
 
 
     def gptCode(self, key: str, model: str, query: str) -> str:
-        ''' method to access OpenAI API '''
+        ''' method to access OpenAI chat.completions API '''
         try:
             client = OpenAI(
             api_key = os.environ.get(key)  # openai API
         )
         except Exception as e:
-            return e
+            wx.MessageBox(str(e), 'Info', wx.OK | wx.ICON_ERROR)
+            return ""
 
         try:
             response = client.chat.completions.create(
               model=model,
-              messages=[{"role": "user", "content": "You are a helpful assistant."},
+              messages=[{"role": "user", "content": opts[4]},
                   {"role": "user", "content" : query.strip()}
               ]
             )
             output = response.choices[0].message.content
             return output
         except Exception as e:
-            return e
+            wx.MessageBox(str(e), 'Info', wx.OK | wx.ICON_ERROR)
+            return ""
 
 
     def on_key_down_hotkeys(self, event):
+        ''' Set up HotKeys for the App '''
         keycode = event.GetKeyCode()
         modifiers = event.GetModifiers()
 
