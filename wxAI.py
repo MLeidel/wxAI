@@ -29,7 +29,8 @@ opts = iniproc.read("options.ini",'openai',     # 0
                                    'model',     # 1
                                    'fontsz1',   # 2
                                    'fontsz2',   # 3
-                                   'role')      # 4
+                                   'role',      # 4
+                                   'log')       # 5
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, title="wxAI V1.0 OpenAI " + opts[1]):
@@ -67,7 +68,6 @@ class MyFrame(wx.Frame):
         )
         self.text2.Bind(wx.EVT_KEY_DOWN, self.on_key_down_hotkeys)
         self.text2.SetValue(intro)
-
 
         # ----------------------------
         # Clear Button
@@ -156,9 +156,9 @@ class MyFrame(wx.Frame):
         # SET CUSTOM FONTS
         # https://docs.wxpython.org/wx.FontInfo.html#wx-fontinfo
         # https://docs.wxpython.org/wx.FontFamily.enumeration.html#wx-fontfamily
-        custom_font1 = wx.Font( wx.FontInfo(int(opts[2])).Family(wx.FONTFAMILY_TELETYPE) )  # monospace
+        custom_font1 = wx.Font( wx.FontInfo(int(opts[2])).Family(wx.FONTFAMILY_MODERN) )  # monospace
         self.text1.SetFont(custom_font1)
-        custom_font2 = wx.Font( wx.FontInfo(int(opts[3])).Family(wx.FONTFAMILY_MODERN) )
+        custom_font2 = wx.Font( wx.FontInfo(int(opts[3])).Family(wx.FONTFAMILY_TELETYPE) )
         self.text2.SetFont(custom_font2)
 
         self.Show()
@@ -218,6 +218,10 @@ class MyFrame(wx.Frame):
             self.text1.SetValue("")
             return
         self.text2.SetValue(aitext)
+        if opts[5].lower() == "true":
+            with open("log.md", "w", encoding='utf-8') as fout:
+                fout.write("\n==================================================\n\n")
+                fout.write(aitext)
 
 
     def gptCode(self, key: str, model: str, query: str) -> str:
