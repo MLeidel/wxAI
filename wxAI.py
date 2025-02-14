@@ -47,7 +47,7 @@ class MyFrame(wx.Frame):
         sizer.Add(
             self.text1,
             pos=(0, 0),          # Position at row 0, column 0
-            span=(1, 4),         # Span of 1 row and 2 columns
+            span=(1, 5),         # Span of 1 row and 2 columns
             flag=wx.EXPAND       # Allow horizontal expansion
         )
         sizer.SetItemMinSize(self.text1, self.text1.GetSize().GetWidth(), 125)  # Set minimum height
@@ -63,7 +63,7 @@ class MyFrame(wx.Frame):
         sizer.Add(
             self.text2,
             pos=(1, 0),          # Position at row 1, column 0
-            span=(1, 4),         # Span of 1 row and 2 columns
+            span=(1, 5),         # Span of 1 row and 2 columns
             flag=wx.EXPAND       # Allow both horizontal and vertical expansion
         )
         self.text2.Bind(wx.EVT_KEY_DOWN, self.on_key_down_hotkeys)
@@ -100,12 +100,26 @@ class MyFrame(wx.Frame):
         export_btn.SetToolTip("Open response in web browser")
 
         # ----------------------------
+        # View Button
+        # ----------------------------
+        view_btn = wx.Button(panel, label="View Log")
+        sizer.Add(
+            view_btn,
+            pos=(2, 2),          # Position at row 2, column 0
+            span=(1, 1),         # Span of 1 row and 1 column
+            flag=wx.EXPAND | wx.ALL, # Align to bottom-right
+            border=5  # behaves like a "margin"
+        )
+        # Bind the close button event to the handler
+        view_btn.Bind(wx.EVT_BUTTON, self.on_view)
+
+        # ----------------------------
         # Submit Button
         # ----------------------------
         submit_btn = wx.Button(panel, label="Submit")
         sizer.Add(
             submit_btn,
-            pos=(2, 2),          # Position at row 2, column 0
+            pos=(2, 3),          # Position at row 2, column 0
             span=(1, 1),         # Span of 1 row and 1 column
             flag=wx.EXPAND | wx.ALL, # Align to bottom-right
             border=5  # behaves like a "margin"
@@ -119,7 +133,7 @@ class MyFrame(wx.Frame):
         close_btn = wx.Button(panel, label="Close")
         sizer.Add(
             close_btn,
-            pos=(2, 3),          # Position at row 2, column 0
+            pos=(2, 4),          # Position at row 2, column 0
             span=(1, 1),         # Span of 1 row and 1 column
             flag=wx.EXPAND | wx.ALL, # Align to bottom-right
             border=5  # behaves like a "margin"
@@ -135,8 +149,9 @@ class MyFrame(wx.Frame):
         sizer.AddGrowableCol(0, 1)    # Column 0 for Submit button & response area grows horizontally
         sizer.AddGrowableCol(1, 1)    # Clear button grows horizontally
         sizer.AddGrowableCol(2, 1)    # Export button grows horizontally
-        sizer.AddGrowableCol(3, 1)    # Close button grows horizontally
-        sizer.AddGrowableRow(1, 1)    # Prompt area ROW grows vertically
+        sizer.AddGrowableCol(3, 1)    #
+        sizer.AddGrowableCol(4, 1)    #
+        sizer.AddGrowableRow(1, 1)    #
 
         panel.SetSizer(sizer)
 
@@ -160,6 +175,14 @@ class MyFrame(wx.Frame):
         self.text1.SetFont(custom_font1)
         custom_font2 = wx.Font( wx.FontInfo(int(opts[3])).Family(wx.FONTFAMILY_TELETYPE) )
         self.text2.SetFont(custom_font2)
+
+        # DISABLE View Log if not set to 'on'
+        if opts[5] == "off":
+            view_btn.Enable(False)
+            view_btn.SetToolTip("Log is 'off'")
+        else:
+            view_btn.SetToolTip("View past queries")
+
 
         self.Show()
 
@@ -207,6 +230,15 @@ class MyFrame(wx.Frame):
         webbrowser.open(htmlFile)
 
 
+    def on_view(self, event):
+        ''' view the current log
+            if set to "on" in options '''
+        with open("log.md", "r", encoding='utf-8') as fin:
+            self.text2.SetValue(fin.read())
+        self.text2.SetFocus()
+        self.text2.SetInsertionPointEnd()
+
+
     def on_submit(self, event):
         ''' Event handler for Submit button (Ctrl-G). '''
         self.text2.SetValue("Processing ...")
@@ -218,8 +250,9 @@ class MyFrame(wx.Frame):
             self.text1.SetValue("")
             return
         self.text2.SetValue(aitext)
-        if opts[5].lower() == "true":
-            with open("log.md", "w", encoding='utf-8') as fout:
+        # append to log.md
+        if opts[5].lower() == "on":
+            with open("log.md", "a", encoding='utf-8') as fout:
                 fout.write("\n==================================================\n\n")
                 fout.write(aitext)
 

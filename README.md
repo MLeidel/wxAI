@@ -3,9 +3,9 @@
 
 ![wxAI](images/wxAI_1.png "wxAI")
 
-wxAI is a _light_ version of [GptGUI](https://github.com/MLeidel/GptGUI "Git Website").
+wxAI is similar to [GptGUI](https://github.com/MLeidel/GptGUI "Git Website").
 
-wxAI is written in Python3 and wxPython GUI package producing a GTK look and feel
+wxAI is written in Python3 with wxPython producing a GTK GUI
 on Linux and a true _light_ theme look on Windows.
 
 wxAI has fewer options than GptGUI and the `options.ini` file must be edited manually.
@@ -16,6 +16,7 @@ At this time this is what an `options.ini` might contain:
         openai=GPTKEY
         model=o1-mini
         role=you are a helpful coding assistant
+        log=on
         fontsz1=10
         fontsz2=12
 
