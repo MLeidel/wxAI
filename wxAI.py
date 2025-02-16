@@ -7,8 +7,16 @@ import iniproc
 import markdown
 import webbrowser
 import wx
+import platform
 from openai import OpenAI
 
+opts = [] # loading options from the options.ini file into a list
+opts = iniproc.read("options.ini",'openai',     # 0
+                                   'model',     # 1
+                                   'fontsz1',   # 2
+                                   'fontsz2',   # 3
+                                   'role',      # 4
+                                   'log')       # 5
 intro = '''
 Welcome to wxAI
 
@@ -24,13 +32,8 @@ other details on using wxAI.
 
 '''
 
-opts = [] # loading options from the options.ini file into a list
-opts = iniproc.read("options.ini",'openai',     # 0
-                                   'model',     # 1
-                                   'fontsz1',   # 2
-                                   'fontsz2',   # 3
-                                   'role',      # 4
-                                   'log')       # 5
+intro += "role: " + opts[4]
+
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, title="wxAI V1.0 OpenAI " + opts[1]):
@@ -171,10 +174,25 @@ class MyFrame(wx.Frame):
         # SET CUSTOM FONTS
         # https://docs.wxpython.org/wx.FontInfo.html#wx-fontinfo
         # https://docs.wxpython.org/wx.FontFamily.enumeration.html#wx-fontfamily
-        custom_font1 = wx.Font( wx.FontInfo(int(opts[2])).Family(wx.FONTFAMILY_MODERN) )  # monospace
-        self.text1.SetFont(custom_font1)
-        custom_font2 = wx.Font( wx.FontInfo(int(opts[3])).Family(wx.FONTFAMILY_TELETYPE) )
-        self.text2.SetFont(custom_font2)
+        if platform.system() == "Windows":
+            custom_font1 = wx.Font( wx.FontInfo(int(opts[2])).Family(wx.FONTFAMILY_MODERN) )  # monospace
+            self.text1.SetFont(custom_font1)
+            font = wx.Font(
+                int(opts[3]),                # Font size
+                wx.FONTFAMILY_MODERN,   # Font family: MODERN is typically monospaced
+                wx.FONTSTYLE_NORMAL,    # Font style
+                wx.FONTWEIGHT_NORMAL,   # Font weight
+                False,                  # Underlined
+                "Consolas"              # Face name
+            )
+            # custom_font2 = wx.Font( wx.FontInfo(int(opts[3])).Family(wx.FONTFAMILY_MODERN) )
+            self.text2.SetFont(font)
+        else:
+            custom_font1 = wx.Font( wx.FontInfo(int(opts[2])).Family(wx.FONTFAMILY_MODERN) )  # monospace
+            self.text1.SetFont(custom_font1)
+            custom_font2 = wx.Font( wx.FontInfo(int(opts[3])).Family(wx.FONTFAMILY_TELETYPE) )
+            self.text2.SetFont(custom_font2)
+
 
         # DISABLE View Log if not set to 'on'
         if opts[5] == "off":
@@ -253,7 +271,8 @@ class MyFrame(wx.Frame):
         # append to log.md
         if opts[5].lower() == "on":
             with open("log.md", "a", encoding='utf-8') as fout:
-                fout.write("\n==================================================\n\n")
+                fout.write("\n\n==================================================\n")
+                fout.write("==================================================\n\n")
                 fout.write(aitext)
 
 
