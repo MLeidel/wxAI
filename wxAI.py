@@ -17,23 +17,14 @@ opts = iniproc.read("options.ini",'openai',     # 0
                                    'fontsz2',   # 3
                                    'role',      # 4
                                    'log')       # 5
-intro = '''
+intro = f'''
 Welcome to wxAI
 
-This is connected to the OpenAI API, so you must have a registered key
-from OpenAI which you will setup in your computer's environment.
-Then edit the "openai" value in your "options.ini" file
-located in wxAI's directory.
-
-https://beta.openai.com/signup
-
-Open the README.html file, located in the app's directory, for
-other details on using wxAI.
-
+OpenAI Key: {opts[0]}
+Model: {opts[1]}
+role: {opts[4]}
+log: {opts[5]}
 '''
-
-intro += "role: " + opts[4]
-
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, title="wxAI V1.0 OpenAI " + opts[1]):

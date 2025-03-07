@@ -5,6 +5,8 @@
 
 wxAI is similar to [GptGUI](https://github.com/MLeidel/GptGUI "Git Website").
 
+You will need an OpenAI api-key to use this program.
+
 wxAI is written in Python3 with wxPython producing a GTK GUI
 on Linux and a true _light_ theme look on Windows.
 
@@ -12,7 +14,7 @@ wxAI has fewer options than GptGUI and the `options.ini` file must be edited man
 
 At this time this is what an `options.ini` might contain:
 
-        # wsAI.py
+        # wxAI.py
         openai=GPTKEY
         model=o1-mini
         role=you are a helpful coding assistant
@@ -23,9 +25,9 @@ At this time this is what an `options.ini` might contain:
 The **Export** button converts the markdown response to HTML and presents it in the
 system default browser. 
 
-The other functions are self explanatory.
+The other function buttons are self explanatory.
 
-Python3 must be installed along with these modules:
+wxAI requires these other python3 modules:
 
         markdown
         wx
