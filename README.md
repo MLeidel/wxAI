@@ -1,6 +1,8 @@
 # wxAI
 ## Desktop Front-End for OpenAI Query
 
+_see **wxGAI** for Google Gemini_
+
 ![wxAI](images/wxAI_1.png "wxAI")
 
 wxAI is similar to [GptGUI](https://github.com/MLeidel/GptGUI "Git Website").
