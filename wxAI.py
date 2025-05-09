@@ -8,6 +8,7 @@ import markdown
 import webbrowser
 import wx
 import platform
+from time import gmtime, strftime
 from openai import OpenAI
 
 opts = [] # loading options from the options.ini file into a list
@@ -262,12 +263,15 @@ class MyFrame(wx.Frame):
             self.text1.SetValue("")
             return
         self.text2.SetValue(aitext)
-        # append to log.md
+        # append to log.md ?
         if opts[5].lower() == "on":
+            today = strftime("%a %d %b %Y", gmtime())
+            tm = strftime("%H:%M")
             with open("log.md", "a", encoding='utf-8') as fout:
-                fout.write("\n\n=================================\n\n")
+                fout.write("\n\n=================================== " + today + " " + tm + "\n")
+                fout.write(query)
+                fout.write("\n=====================================\n\n")
                 fout.write(aitext)
-
 
     def gptCode(self, key: str, model: str, query: str) -> str:
         ''' method to access OpenAI chat.completions API '''
@@ -279,14 +283,26 @@ class MyFrame(wx.Frame):
             wx.MessageBox(str(e), 'Info', wx.OK | wx.ICON_ERROR)
             return ""
 
+        # try:
+        #     response = client.chat.completions.create(
+        #       model=model,
+        #       messages=[{"role": "user", "content": opts[4]},
+        #           {"role": "user", "content" : query.strip()}
+        #       ]
+        #     )
+        #     output = response.choices[0].message.content
+        #     return output
+        # except Exception as e:
+        #     wx.MessageBox(str(e), 'Info', wx.OK | wx.ICON_ERROR)
+        #     return ""
+
+        # Better OpenAI API for 'non-chat' related queries
         try:
-            response = client.chat.completions.create(
-              model=model,
-              messages=[{"role": "user", "content": opts[4]},
-                  {"role": "user", "content" : query.strip()}
-              ]
+            response = client.responses.create(
+                model=model,
+                input=query.strip()
             )
-            output = response.choices[0].message.content
+            output = response.output_text
             return output
         except Exception as e:
             wx.MessageBox(str(e), 'Info', wx.OK | wx.ICON_ERROR)
