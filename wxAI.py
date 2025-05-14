@@ -8,7 +8,7 @@ import markdown
 import webbrowser
 import wx
 import platform
-from time import gmtime, strftime
+from time import localtime, strftime
 from openai import OpenAI
 
 opts = [] # loading options from the options.ini file into a list
@@ -265,7 +265,7 @@ class MyFrame(wx.Frame):
         self.text2.SetValue(aitext)
         # append to log.md ?
         if opts[5].lower() == "on":
-            today = strftime("%a %d %b %Y", gmtime())
+            today = strftime("%a %d %b %Y", localtime())
             tm = strftime("%H:%M")
             with open("log.md", "a", encoding='utf-8') as fout:
                 fout.write("\n\n=================================== " + today + " " + tm + "\n")
